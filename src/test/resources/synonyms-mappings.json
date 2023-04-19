@@ -1,0 +1,10 @@
+{
+  "mappings": {
+    "properties": {
+      "synonyms": {
+        "type": "keyword",
+        "index": false
+      }
+    }
+  }
+}

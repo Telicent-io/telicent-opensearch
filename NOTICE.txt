@@ -1,0 +1,4 @@
+Telicent OpenSearch Plugin
+
+Telicent (https://telicent.io/)
+Copyright 2023 Telicent
