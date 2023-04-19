@@ -92,7 +92,6 @@ public class IndexedSynonymParser extends SolrSynonymParser {
 
     public void parse() throws IOException, ParseException {
         // create a one-off client
-        // TODO make port configurable etc...
         final RestClient restClient =
                 RestClient.builder(new HttpHost(this.host, this.port)).build();
 

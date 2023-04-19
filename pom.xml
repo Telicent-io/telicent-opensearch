@@ -6,13 +6,13 @@
 	<groupId>io.telicent.opensearch</groupId>
 	<artifactId>SynonymsPlugin</artifactId>
 	<version>2.6.0.0</version>
-	<description>A plugin for OpenSearch providing an index-backed synonym
-		handler</description>
+	<description>A plugin for OpenSearch providing an index-backed synonym handler</description>
 	<properties>
 		<jdk.version>17</jdk.version>
 		<testcontainer.version>1.17.6</testcontainer.version>
 		<git-code-format-maven-plugin.version>4.2</git-code-format-maven-plugin.version>
 		<jackson.version>2.14.2</jackson.version>
+		<opensearch.version>2.6.0</opensearch.version>
 	</properties>
 	<build>
 		<pluginManagement>
@@ -121,7 +121,7 @@
 		<dependency>
 			<groupId>org.opensearch.client</groupId>
 			<artifactId>opensearch-rest-client</artifactId>
-			<version>2.6.0</version>
+			<version>${opensearch.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.opensearch.client</groupId>
@@ -131,7 +131,7 @@
 		<dependency>
 			<groupId>org.opensearch</groupId>
 			<artifactId>opensearch</artifactId>
-			<version>2.6.0</version>
+			<version>${opensearch.version}</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
@@ -150,7 +150,7 @@
 		<dependency>
 			<groupId>org.opensearch.test</groupId>
 			<artifactId>framework</artifactId>
-			<version>2.6.0</version>
+			<version>${opensearch.version}</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
