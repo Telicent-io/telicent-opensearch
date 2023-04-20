@@ -6,7 +6,8 @@
 	<groupId>io.telicent.opensearch</groupId>
 	<artifactId>SynonymsPlugin</artifactId>
 	<version>2.6.0.0</version>
-	<description>A plugin for OpenSearch providing an index-backed synonym handler</description>
+	<description>A plugin for OpenSearch providing an index-backed synonym
+		handler</description>
 	<properties>
 		<jdk.version>17</jdk.version>
 		<testcontainer.version>1.17.6</testcontainer.version>
@@ -15,20 +16,6 @@
 		<opensearch.version>2.6.0</opensearch.version>
 	</properties>
 	<build>
-		<pluginManagement>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-surefire-plugin</artifactId>
-				<configuration>
-					<!-- for disabling security manager in tests -->
-					<systemPropertyVariables>
-						<tests.security.manager>false</tests.security.manager>
-					</systemPropertyVariables>
-				</configuration>
-			</plugin>
-		</plugins>
-	</pluginManagement>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -146,11 +133,10 @@
 			<version>${jackson.version}</version>
 			<scope>compile</scope>
 		</dependency>
-		<!-- https://mvnrepository.com/artifact/org.opensearch.client.test/test -->
 		<dependency>
-			<groupId>org.opensearch.test</groupId>
-			<artifactId>framework</artifactId>
-			<version>${opensearch.version}</version>
+			<groupId>org.opensearch</groupId>
+			<artifactId>opensearch-testcontainers</artifactId>
+			<version>2.0.0</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
