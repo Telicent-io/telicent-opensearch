@@ -18,6 +18,7 @@ import java.util.Collections;
 import java.util.concurrent.ExecutionException;
 import org.apache.http.ParseException;
 import org.apache.http.util.EntityUtils;
+import org.hamcrest.MatcherAssert;
 import org.junit.Test;
 import org.opensearch.action.admin.indices.refresh.RefreshRequest;
 import org.opensearch.action.index.IndexRequest;
@@ -44,7 +45,7 @@ public class IndexedSynonymsPluginIT extends OpenSearchIntegTestCase {
         String body = EntityUtils.toString(response.getEntity(), StandardCharsets.UTF_8);
 
         logger.info("response body: {}", body);
-        assertThat(body, containsString("opensearch-indexed-synonyms"));
+        MatcherAssert.assertThat(body, containsString("opensearch-indexed-synonyms"));
     }
 
     @Test

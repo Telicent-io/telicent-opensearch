@@ -6,9 +6,7 @@ This plugin provides an alternative implementation of the [SynonymGraphTokenFilt
 
 Instead of storing the synonyms in a file, this implementation loads it from an OpenSearch index, which makes it easier to update especially when OpenSearch runs in a sandboxed environment.
 
-Please consult the []Opensearch documentation](https://opensearch.org/docs/2.6/install-and-configure/plugins/)  for instructions on how to install and configure plugins. 
-
-This project is licensed under ASF license v2, see [LICENSE](LICENSE). All contributions are welcome and should be under ASF license v2, see [CONTRIBUTING](CONTRIBUTING.md) on how to proceed. 
+Please consult the [Opensearch documentation](https://opensearch.org/docs/2.6/install-and-configure/plugins/)  for instructions on how to install and configure plugins. 
 
 ### Issues/Questions
 
@@ -26,7 +24,15 @@ $OS_HOME/bin/opensearch-plugin install --batch file:///target/releases/SynonymsP
 
 When installing the plugin, you will see a message similar to this one:
 
-![OpenSearch installation message](https://user-images.githubusercontent.com/2104864/226297257-390d224a-dd1b-463a-a553-b77414315625.png)
+```
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@     WARNING: plugin requires additional permissions     @
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+* java.net.SocketPermission 0.0.0.0 connect,listen,accept,resolve
+* java.net.SocketPermission localhost connect,listen,accept,resolve
+See http://docs.oracle.com/javase/8/docs/technotes/guides/security/permissions.html
+for descriptions of what these permissions allow and the associated risks.
+```
 
 This is because the plugin code needs to query OpenSearch and requires special permissions to do so. 
 
@@ -106,9 +112,9 @@ The synonyms can be stored in any number of documents in the index, a query load
 
 ## Testing
 
-Now that the synonym index has been populated, you can check that it is being applied. First, since the index has been created *after* declaring it in the index, it must be reloaded with 
+Now that the synonym index has been populated, you can check that it is being applied. First, since the synonym data have been created *after* configuring the analysis for the search, the config must be reloaded with 
 
-`curl -XPOST  "http://localhost:9200/my_index/_reload_search_analyzers"`
+`curl -XPOST  "http://localhost:9200/_plugins/_refresh_search_analyzers/my_index"`
 
 you can then use the analyze endpoint to get a description of how a field will be analysed at search time, for instance
 
@@ -171,7 +177,7 @@ should return
 }
 ```
 
-as you can see, _universe_ has been expanded into _cosmos_ with the same offset.
+as you can see, _universe_ has been expanded into _cosmos_ with the same offset. This also illustrates the use of ASCII folding.
 
 
 ### Note to developers
@@ -186,7 +192,8 @@ prior to submitting a PR.
 
 ## License
 This code is licensed under the Apache 2.0 License. See [LICENSE.txt](LICENSE.txt).
+All contributions are welcome and should be under the Apache 2.0 License, see [CONTRIBUTING](CONTRIBUTING.md) on how to proceed. 
 
 ## Copyright
-Copyright Telicent. See [NOTICE](NOTICE.txt) for details.- Check the plugin versioning policy is documented and help users know which versions of the plugin are compatible and recommended for specific versions of OpenSearch 
+Copyright Telicent. See [NOTICE](NOTICE.txt) for details.
 
