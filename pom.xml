@@ -14,12 +14,14 @@
 		<git-code-format-maven-plugin.version>4.2</git-code-format-maven-plugin.version>
 		<jackson.version>2.14.2</jackson.version>
 		<opensearch.version>2.6.0</opensearch.version>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 	<build>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.1</version>
 				<configuration>
 					<source>${jdk.version}</source>
 					<target>${jdk.version}</target>
