@@ -123,13 +123,6 @@ public class IndexedSynonymParser extends SolrSynonymParser {
                             .loadTrustMaterial(null, new TrustAllStrategy())
                             .build();
 
-            logger.info(
-                    "Connecting to https://{}:{} with {}{}",
-                    this.host,
-                    this.port,
-                    this.username,
-                    this.password);
-
             restClient =
                     RestClient.builder(new HttpHost(this.host, this.port, "https"))
                             .setHttpClientConfigCallback(
