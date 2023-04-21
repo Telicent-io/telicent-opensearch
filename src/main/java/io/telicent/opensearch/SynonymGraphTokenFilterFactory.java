@@ -25,7 +25,7 @@ import org.opensearch.index.analysis.TokenizerFactory;
 
 /**
  * Alternative implementation of the SynonymGraphTokenFilter which loads its dictionary from an
- * opensearch index instead of a file. Used at search time only and not during indexing.
+ * OpenSearch index instead of a file. Used at search time only and not during indexing.
  */
 public class SynonymGraphTokenFilterFactory extends AbstractTokenFilterFactory {
 
@@ -34,7 +34,9 @@ public class SynonymGraphTokenFilterFactory extends AbstractTokenFilterFactory {
 
     protected final String indexName;
     protected final int port;
-    protected final String host;
+
+    // always connect to localhost
+    protected final String host = "localhost";
 
     protected final String username;
     protected final String password;
@@ -46,12 +48,10 @@ public class SynonymGraphTokenFilterFactory extends AbstractTokenFilterFactory {
         this.expand = settings.getAsBoolean("expand", true);
         this.lenient = settings.getAsBoolean("lenient", false);
         this.indexName = settings.get("index", ".synonyms");
-
         this.username = settings.get("username");
         this.password = settings.get("password");
 
         this.port = env.settings().getAsInt("http.port", 9200);
-        this.host = env.settings().get("network.host", "localhost");
     }
 
     @Override

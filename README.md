@@ -28,7 +28,6 @@ When installing the plugin, you will see a message similar to this one:
 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 @     WARNING: plugin requires additional permissions     @
 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-* java.net.SocketPermission 0.0.0.0 connect,listen,accept,resolve
 * java.net.SocketPermission localhost connect,listen,accept,resolve
 See http://docs.oracle.com/javase/8/docs/technotes/guides/security/permissions.html
 for descriptions of what these permissions allow and the associated risks.
@@ -46,7 +45,7 @@ This way the plugin will be preinstalled.
 
 ## Getting Started
 
-First, you need to declare the analyzers when creating your index (assuming OpenSearch is running locally on the default port and that the [security plugin is deactivated](https://opensearch.org/docs/2.6/security/configuration/disable)):
+First, you need to declare the analyzers when creating your index (assuming OpenSearch is running locally on the default port and that the default security settings are applied):
 
 ```
 curl --insecure -u admin:admin -XPUT "https://localhost:9200/my_index" -H 'Content-Type: application/json' -d'
@@ -89,14 +88,13 @@ curl --insecure -u admin:admin -XPUT "https://localhost:9200/my_index" -H 'Conte
 The index synonym graph is used only during search and can't be applied during indexing.
 The parameters _lenient_ and _expand_ are similar to those of synonym-graph-tokenfilter, their default values are indicated above.
 The parameter _index_ specifies where the plugin will load the synonym mappings from. The default value is _.synonyms_.
+The parameters "username" and "password" allow to specify the credentials to use for connecting to OpenSearch. If the [security plugin is deactivated](https://opensearch.org/docs/2.6/security/configuration/disable),
+remove these parameters.
 
-The next step is to declare the index used to store the synonyms and populate it.
+The next step is to index the synonyms.
 
 ```
-curl -XPUT "http://localhost:9200/.synonyms"
-
-
-curl -XPOST -H "Content-Type: application/json" "http://localhost:9200/.synonyms/_doc/synonyms" -d '{
+curl --insecure -u admin:admin -XPOST -H "Content-Type: application/json" "https://localhost:9200/.synonyms/_doc/synonyms" -d '{
   "synonyms": [
     "i-pod, i pod => ipod",
     "sea biscuit, sea biscit => seabiscuit",
@@ -116,12 +114,14 @@ The synonyms can be stored in any number of documents in the index, a query load
 
 Now that the synonym index has been populated, you can check that it is being applied. First, since the synonym data have been created *after* configuring the analysis for the search, the config must be reloaded with 
 
-`curl -XPOST  "http://localhost:9200/_plugins/_refresh_search_analyzers/my_index"`
+```
+curl --insecure -u admin:admin -XPOST "https://localhost:9200/_plugins/_refresh_search_analyzers/my_index"
+```
 
 you can then use the analyze endpoint to get a description of how a field will be analysed at search time, for instance
 
 ```
-curl -XPOST "http://localhost:9200/my_index/_analyze" -H 'Content-Type: application/json' -d'
+curl --insecure -u admin:admin -XPOST "https://localhost:9200/my_index/_analyze" -H 'Content-Type: application/json' -d'
 { 
   "analyzer": "default_search", 
   "text": "Is this universe déja vu?"
