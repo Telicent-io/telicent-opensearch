@@ -36,6 +36,9 @@ public class SynonymGraphTokenFilterFactory extends AbstractTokenFilterFactory {
     protected final int port;
     protected final String host;
 
+    protected final String username;
+    protected final String password;
+
     SynonymGraphTokenFilterFactory(
             IndexSettings indexSettings, Environment env, String name, Settings settings) {
         super(indexSettings, name, settings);
@@ -43,6 +46,9 @@ public class SynonymGraphTokenFilterFactory extends AbstractTokenFilterFactory {
         this.expand = settings.getAsBoolean("expand", true);
         this.lenient = settings.getAsBoolean("lenient", false);
         this.indexName = settings.get("index", ".synonyms");
+
+        this.username = settings.get("username");
+        this.password = settings.get("password");
 
         this.port = env.settings().getAsInt("http.port", 9200);
         this.host = env.settings().get("network.host", "localhost");
@@ -93,7 +99,15 @@ public class SynonymGraphTokenFilterFactory extends AbstractTokenFilterFactory {
         try {
             IndexedSynonymParser parser =
                     new IndexedSynonymParser(
-                            host, port, this.indexName, this.expand, true, this.lenient, analyzer);
+                            host,
+                            port,
+                            username,
+                            password,
+                            this.indexName,
+                            this.expand,
+                            true,
+                            this.lenient,
+                            analyzer);
             parser.parse();
             return parser.build();
         } catch (Exception e) {

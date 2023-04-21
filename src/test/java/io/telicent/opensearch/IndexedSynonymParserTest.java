@@ -8,19 +8,24 @@
 package io.telicent.opensearch;
 
 import jakarta.json.spi.JsonProvider;
-import java.io.IOException;
 import java.io.InputStream;
-import java.text.ParseException;
+import javax.net.ssl.SSLContext;
 import org.apache.http.HttpHost;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.CredentialsProvider;
+import org.apache.http.conn.ssl.TrustAllStrategy;
+import org.apache.http.impl.client.BasicCredentialsProvider;
+import org.apache.http.impl.nio.client.HttpAsyncClientBuilder;
+import org.apache.http.ssl.SSLContextBuilder;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.analysis.synonym.SynonymMap;
-import org.junit.After;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.Timeout;
 import org.opensearch.client.RestClient;
+import org.opensearch.client.RestClientBuilder;
 import org.opensearch.client.json.JsonData;
 import org.opensearch.client.json.JsonpMapper;
 import org.opensearch.client.json.jackson.JacksonJsonpMapper;
@@ -43,8 +48,7 @@ public class IndexedSynonymParserTest {
 
     private static final String INDEXNAME = ".synonyms";
 
-    @Before
-    public void setup() throws Exception {
+    private void setup(boolean security) throws Exception {
 
         // using opensearch-testcontainers
         // https://github.com/opensearch-project/opensearch-testcontainers
@@ -54,16 +58,52 @@ public class IndexedSynonymParserTest {
         LOG.info("Starting docker instance of OpenSearch {}...", version);
 
         container = new OpensearchContainer("opensearchproject/opensearch:" + version);
+        if (security) {
+            container.withSecurityEnabled();
+        }
         container.start();
         LOG.info("OpenSearch container started at {}", container.getHttpHostAddress());
 
-        indexSynonyms();
+        indexSynonyms(security);
     }
 
     /** Populates synonyms into a .synonyms index * */
-    private void indexSynonyms() throws Exception {
-        final RestClient restClient =
-                RestClient.builder(HttpHost.create(container.getHttpHostAddress())).build();
+    private void indexSynonyms(boolean security) throws Exception {
+        final RestClient restClient;
+        // need credentials?
+        if (security) {
+            final CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
+
+            credentialsProvider.setCredentials(
+                    AuthScope.ANY,
+                    new UsernamePasswordCredentials(
+                            container.getUsername(), container.getPassword()));
+
+            // Allow self-signed certificates
+            final SSLContext sslcontext =
+                    SSLContextBuilder.create()
+                            .loadTrustMaterial(null, new TrustAllStrategy())
+                            .build();
+
+            restClient =
+                    RestClient.builder(HttpHost.create(container.getHttpHostAddress()))
+                            .setHttpClientConfigCallback(
+                                    new RestClientBuilder.HttpClientConfigCallback() {
+                                        @Override
+                                        public HttpAsyncClientBuilder customizeHttpClient(
+                                                HttpAsyncClientBuilder httpClientBuilder) {
+                                            return httpClientBuilder
+                                                    .setDefaultCredentialsProvider(
+                                                            credentialsProvider)
+                                                    .setSSLContext(sslcontext);
+                                        }
+                                    })
+                            .build();
+        } else {
+            restClient =
+                    RestClient.builder(HttpHost.create(container.getHttpHostAddress())).build();
+        }
+
         final OpenSearchTransport transport =
                 new RestClientTransport(restClient, new JacksonJsonpMapper());
         final OpenSearchClient client = new OpenSearchClient(transport);
@@ -75,19 +115,39 @@ public class IndexedSynonymParserTest {
         client.shutdown();
     }
 
-    @After
-    public void close() {
+    private void close() {
         LOG.info("Closing OpenSearch container");
         container.close();
     }
 
     @Test
-    public void loadSynonyms() throws IOException, ParseException {
+    public void loadSynonymsUnAuthenticated() throws Exception {
+        laodSynonyms(false);
+    }
+
+    @Test
+    public void loadSynonymsAuthenticated() throws Exception {
+        laodSynonyms(true);
+    }
+
+    private void laodSynonyms(boolean authentication) throws Exception {
+        setup(authentication);
+
+        String username = null;
+        String password = null;
+
+        if (authentication) {
+            username = container.getUsername();
+            password = container.getPassword();
+        }
+
         final StandardAnalyzer standardAnalyzer = new StandardAnalyzer();
         IndexedSynonymParser parser =
                 new IndexedSynonymParser(
                         container.getHost(),
                         container.getFirstMappedPort().intValue(),
+                        username,
+                        password,
                         INDEXNAME,
                         true,
                         true,
@@ -96,5 +156,7 @@ public class IndexedSynonymParserTest {
         parser.parse();
         SynonymMap synonyms = parser.build();
         Assert.assertEquals(7, synonyms.words.size());
+
+        close();
     }
 }

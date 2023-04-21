@@ -12,11 +12,18 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.io.IOException;
 import java.io.StringReader;
-import java.text.ParseException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
+import javax.net.ssl.SSLContext;
 import org.apache.http.HttpHost;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.CredentialsProvider;
+import org.apache.http.conn.ssl.TrustAllStrategy;
+import org.apache.http.impl.client.BasicCredentialsProvider;
+import org.apache.http.impl.nio.client.HttpAsyncClientBuilder;
+import org.apache.http.ssl.SSLContextBuilder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.lucene.analysis.Analyzer;
@@ -24,6 +31,7 @@ import org.apache.lucene.analysis.synonym.SolrSynonymParser;
 import org.apache.lucene.util.CharsRef;
 import org.apache.lucene.util.CharsRefBuilder;
 import org.opensearch.client.RestClient;
+import org.opensearch.client.RestClientBuilder;
 import org.opensearch.client.json.jackson.JacksonJsonpMapper;
 import org.opensearch.client.opensearch.OpenSearchClient;
 import org.opensearch.client.opensearch.core.SearchResponse;
@@ -38,6 +46,8 @@ public class IndexedSynonymParser extends SolrSynonymParser {
 
     private final String index;
     private final String host;
+    private final String username;
+    private final String password;
     private final int port;
 
     private static final Logger logger = LogManager.getLogger(IndexedSynonymParser.class);
@@ -45,6 +55,8 @@ public class IndexedSynonymParser extends SolrSynonymParser {
     public IndexedSynonymParser(
             String host,
             int port,
+            String username,
+            String password,
             String index,
             boolean expand,
             boolean dedup,
@@ -55,6 +67,8 @@ public class IndexedSynonymParser extends SolrSynonymParser {
         this.index = index;
         this.host = host;
         this.port = port;
+        this.username = username;
+        this.password = password;
     }
 
     @Override
@@ -90,10 +104,49 @@ public class IndexedSynonymParser extends SolrSynonymParser {
         }
     }
 
-    public void parse() throws IOException, ParseException {
+    public void parse() throws Exception {
+
         // create a one-off client
-        final RestClient restClient =
-                RestClient.builder(new HttpHost(this.host, this.port)).build();
+        final RestClient restClient;
+
+        // need credentials?
+        if (this.password != null && this.username != null) {
+
+            final CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
+
+            credentialsProvider.setCredentials(
+                    AuthScope.ANY, new UsernamePasswordCredentials(this.username, this.password));
+
+            // Allow self-signed certificates
+            final SSLContext sslcontext =
+                    SSLContextBuilder.create()
+                            .loadTrustMaterial(null, new TrustAllStrategy())
+                            .build();
+
+            logger.info(
+                    "Connecting to https://{}:{} with {}{}",
+                    this.host,
+                    this.port,
+                    this.username,
+                    this.password);
+
+            restClient =
+                    RestClient.builder(new HttpHost(this.host, this.port, "https"))
+                            .setHttpClientConfigCallback(
+                                    new RestClientBuilder.HttpClientConfigCallback() {
+                                        @Override
+                                        public HttpAsyncClientBuilder customizeHttpClient(
+                                                HttpAsyncClientBuilder httpClientBuilder) {
+                                            return httpClientBuilder
+                                                    .setDefaultCredentialsProvider(
+                                                            credentialsProvider)
+                                                    .setSSLContext(sslcontext);
+                                        }
+                                    })
+                            .build();
+        } else {
+            restClient = RestClient.builder(new HttpHost(this.host, this.port)).build();
+        }
 
         final OpenSearchTransport transport =
                 new RestClientTransport(restClient, new JacksonJsonpMapper());

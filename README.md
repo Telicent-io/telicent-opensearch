@@ -49,7 +49,7 @@ This way the plugin will be preinstalled.
 First, you need to declare the analyzers when creating your index (assuming OpenSearch is running locally on the default port and that the [security plugin is deactivated](https://opensearch.org/docs/2.6/security/configuration/disable)):
 
 ```
-curl -XPUT "http://localhost:9200/my_index" -H 'Content-Type: application/json' -d'
+curl --insecure -u admin:admin -XPUT "https://localhost:9200/my_index" -H 'Content-Type: application/json' -d'
 {
   "settings": {
     "analysis": {
@@ -75,7 +75,9 @@ curl -XPUT "http://localhost:9200/my_index" -H 'Content-Type: application/json' 
           "type": "index_synonym_graph",
           "index": ".synonyms",
           "expand": true,
-          "lenient": false
+          "lenient": false,
+          "username": "admin",
+          "password": "admin"
         }
       }
     }
