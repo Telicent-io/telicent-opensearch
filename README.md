@@ -4,7 +4,7 @@
 
 This plugin provides an alternative implementation of the [SynonymGraphTokenFilter](https://www.elastic.co/guide/en/OpenSearch/reference/7.17/analysis-synonym-graph-tokenfilter.html) for OpenSearch.
 
-Instead of storing the synonyms in a file, this implementation loads it from an OpenSearch index, which makes it easier to update especially when OpenSearch runs in a sandboxed environment.
+Instead of storing the synonyms in a file, this implementation loads it from an OpenSearch index, which makes it easier to update especially when OpenSearch runs in a sandboxed environment or in a cluster as it saves you having to update the synonyms file on every single node.
 
 Please consult the [Opensearch documentation](https://opensearch.org/docs/2.6/install-and-configure/plugins/)  for instructions on how to install and configure plugins. 
 
