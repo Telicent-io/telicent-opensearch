@@ -5,7 +5,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>io.telicent.opensearch</groupId>
 	<artifactId>SynonymsPlugin</artifactId>
-	<version>2.6.0.0</version>
+	<version>2.8.0.0</version>
 	<description>A plugin for OpenSearch providing an index-backed synonym
 		handler</description>
 	<properties>
@@ -13,7 +13,7 @@
 		<testcontainer.version>1.17.6</testcontainer.version>
 		<git-code-format-maven-plugin.version>4.2</git-code-format-maven-plugin.version>
 		<jackson.version>2.14.2</jackson.version>
-		<opensearch.version>2.6.0</opensearch.version>
+		<opensearch.version>2.8.0</opensearch.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 	<build>

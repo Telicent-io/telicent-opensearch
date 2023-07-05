@@ -54,7 +54,7 @@ public class IndexedSynonymParserTest {
         // https://github.com/opensearch-project/opensearch-testcontainers
 
         String version = System.getProperty("opensearch-version");
-        if (version == null) version = "2.6.0";
+        if (version == null) version = "2.8.0";
         LOG.info("Starting docker instance of OpenSearch {}...", version);
 
         container = new OpensearchContainer("opensearchproject/opensearch:" + version);
