@@ -43,6 +43,12 @@ docker build --tag=opensearch-telicent-plugin .
 
 This way the plugin will be preinstalled.
 
+Alternatively, you can simply run the following command to pull the latest image from DockerHub
+
+'''
+docker pull telicent/opensearch
+'''
+
 ## Getting Started
 
 First, you need to declare the analyzers when creating your index (assuming OpenSearch is running locally on the default port and that the default security settings are applied):
