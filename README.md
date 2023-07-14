@@ -8,6 +8,8 @@ Instead of storing the synonyms in a file, this implementation loads it from an 
 
 Please consult the [Opensearch documentation](https://opensearch.org/docs/2.6/install-and-configure/plugins/)  for instructions on how to install and configure plugins. 
 
+You can also use [Telicent Docker image](https://hub.docker.com/repository/docker/telicent/opensearch/general), which provides OpenSearch with the plugin pre-installed. 
+
 ### Issues/Questions
 
 Please file an [issue](https://github.com/Telicent-io/telicent-opensearch/issues "issue").
