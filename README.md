@@ -47,9 +47,9 @@ This way the plugin will be preinstalled.
 
 Alternatively, you can simply run the following command to pull the latest image from DockerHub
 
-'''
+```
 docker pull telicent/opensearch
-'''
+```
 
 ## Getting Started
 
