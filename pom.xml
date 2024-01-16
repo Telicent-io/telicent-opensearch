@@ -12,16 +12,20 @@
 		<jdk.version>17</jdk.version>
 		<testcontainer.version>1.17.6</testcontainer.version>
 		<git-code-format-maven-plugin.version>4.2</git-code-format-maven-plugin.version>
-		<jackson.version>2.14.2</jackson.version>
-		<opensearch.version>2.9.0</opensearch.version>
+		<jackson.version>2.16.1</jackson.version>
+		<log4j.version>2.22.1</log4j.version>
+		<opensearch.version>2.11.1</opensearch.version>
+		<opensearch-client.version>2.8.1</opensearch-client.version>
+		<opensearch-test.version>2.0.1</opensearch-test.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<slf4j.version>2.0.7</slf4j.version>
 	</properties>
 	<build>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.1</version>
+				<version>3.10.1</version>
 				<configuration>
 					<source>${jdk.version}</source>
 					<target>${jdk.version}</target>
@@ -31,6 +35,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-dependency-plugin</artifactId>
+				<version>3.6.1</version>
 				<executions>
 					<execution>
 						<id>copy-dependencies</id>
@@ -45,10 +50,21 @@
 					</execution>
 				</executions>
 			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>3.2.5</version>
+				<configuration>
+					<systemProperties>
+						<opensearch-version>${opensearch.version}</opensearch-version>
+					</systemProperties>
+				</configuration>
+			</plugin>
 			<!-- Assemble the package for the distributable software. -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-assembly-plugin</artifactId>
+				<version>3.4.2</version>
 				<configuration>
 					<appendAssemblyId>false</appendAssemblyId>
 					<outputDirectory>${project.build.directory}/releases/</outputDirectory>
@@ -115,7 +131,7 @@
 		<dependency>
 			<groupId>org.opensearch.client</groupId>
 			<artifactId>opensearch-java</artifactId>
-			<version>2.4.0</version>
+			<version>${opensearch-client.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.opensearch</groupId>
@@ -138,13 +154,24 @@
 		<dependency>
 			<groupId>org.opensearch</groupId>
 			<artifactId>opensearch-testcontainers</artifactId>
-			<version>2.0.0</version>
+			<version>${opensearch-test.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>${slf4j.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-slf4j2-impl</artifactId>
+			<version>${log4j.version}</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>
-			<artifactId>log4j-core</artifactId>
-			<version>2.17.1</version>
+			<artifactId>log4j-api</artifactId>
+			<version>${log4j.version}</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>

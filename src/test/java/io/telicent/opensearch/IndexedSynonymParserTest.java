@@ -54,7 +54,7 @@ public class IndexedSynonymParserTest {
         // https://github.com/opensearch-project/opensearch-testcontainers
 
         String version = System.getProperty("opensearch-version");
-        if (version == null) version = "2.9.0";
+        if (version == null) version = "2.11.1";
         LOG.info("Starting docker instance of OpenSearch {}...", version);
 
         container = new OpensearchContainer("opensearchproject/opensearch:" + version);
@@ -122,15 +122,15 @@ public class IndexedSynonymParserTest {
 
     @Test
     public void loadSynonymsUnAuthenticated() throws Exception {
-        laodSynonyms(false);
+        loadSynonyms(false);
     }
 
     @Test
     public void loadSynonymsAuthenticated() throws Exception {
-        laodSynonyms(true);
+        loadSynonyms(true);
     }
 
-    private void laodSynonyms(boolean authentication) throws Exception {
+    private void loadSynonyms(boolean authentication) throws Exception {
         setup(authentication);
 
         String username = null;
