@@ -24,8 +24,6 @@ import org.apache.http.conn.ssl.TrustAllStrategy;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.nio.client.HttpAsyncClientBuilder;
 import org.apache.http.ssl.SSLContextBuilder;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.synonym.SolrSynonymParser;
 import org.apache.lucene.util.CharsRef;
@@ -38,6 +36,8 @@ import org.opensearch.client.opensearch.core.SearchResponse;
 import org.opensearch.client.opensearch.core.search.Hit;
 import org.opensearch.client.transport.OpenSearchTransport;
 import org.opensearch.client.transport.rest_client.RestClientTransport;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /** Generates a synonym map from the content of an index * */
 public class IndexedSynonymParser extends SolrSynonymParser {
@@ -50,7 +50,7 @@ public class IndexedSynonymParser extends SolrSynonymParser {
     private final String password;
     private final int port;
 
-    private static final Logger logger = LogManager.getLogger(IndexedSynonymParser.class);
+    private static final Logger logger = LoggerFactory.getLogger(IndexedSynonymParser.class);
 
     public IndexedSynonymParser(
             String host,
