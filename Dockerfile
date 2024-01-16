@@ -1,3 +1,5 @@
-FROM opensearchproject/opensearch:2.9.0
-COPY target/releases/SynonymsPlugin-2.9.0.0.zip /tmp
-RUN /usr/share/opensearch/bin/opensearch-plugin install --batch file:///tmp/SynonymsPlugin-2.9.0.0.zip
+ARG OPENSEARCH_VERSION
+FROM opensearchproject/opensearch:${OPENSEARCH_VERSION}
+ARG PLUGIN_VERSION
+COPY target/releases/SynonymsPlugin-${PLUGIN_VERSION}.zip /tmp
+RUN /usr/share/opensearch/bin/opensearch-plugin install --batch file:///tmp/SynonymsPlugin-${PLUGIN_VERSION}.zip

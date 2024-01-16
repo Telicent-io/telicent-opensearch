@@ -22,6 +22,16 @@ jobs:
       
       - name: Build with Maven
         run: mvn -B package --file pom.xml
+
+      - name: Detect OpenSearch Version
+        id: opensearch
+        run: |
+          echo version=$(mvn -q -Dexec.executable=echo -Dexec.args='${opensearch.version}' --non-recursive exec:exec) >> $GITHUB_OUTPUT
+
+      - name: Detect Plugin Version
+        id: plugin
+        run: |
+          echo version=$(mvn -q -Dexec.executable=echo -Dexec.args='${project.version}' --non-recursive exec:exec) >> $GITHUB_OUTPUT
       
       - name: Log in to Docker Hub
         uses: docker/login-action@f4ef78c080cd8ba55a85445d5b36e214a81df20a
@@ -54,3 +64,6 @@ jobs:
           file: ./Dockerfile
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+          build-args: |
+            OPENSEARCH_VERSION=${{ steps.opensearch.outputs.version }}
+            PLUGIN_VERSION=${{ steps.plugin.outputs.version }}
